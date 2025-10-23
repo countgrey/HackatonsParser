@@ -1,0 +1,25 @@
+[
+    {
+        "name": "ОГУ (Оренбургский государственный университет)",
+        "news_url": "https://www.osu.ru/",
+        "doc_urls": [
+            "http://www.osu.ru/doc/79/type/8",
+            "http://www.osu.ru/doc/987/type/4"
+        ]
+    },
+    {
+        "name": "Оренбургский государственный педагогический университет (ОГПУ)",
+        "news_url": "http://www.ospu.ru/news/",
+        "doc_urls": []
+    },
+    {
+        "name": "Хакатоны и мероприятия в Оренбурге",
+        "news_url": "https://vk.com/orenburghackathon",
+        "doc_urls": []
+    },
+    {
+        "name": "Hackathon Russia (ориентировано на студенческие мероприятия в Оренбурге)",
+        "news_url": "https://habr.com/ru/search/?q=оренбург+хакатон",
+        "doc_urls": []
+    }
+]
