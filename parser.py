@@ -8,6 +8,7 @@ from requests.adapters import HTTPAdapter
 from urllib.parse import urljoin
 import sqlite3
 import json
+from datetime import datetime
 
 # --- Настройки ---
 OUTPUT_CSV = "osu_events.csv"
@@ -48,7 +49,7 @@ HEADERS = {
                   "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
 }
 
-# --- Работа с HTTP ---
+# --- HTTP ---
 def fetch(url):
     try:
         resp = session.get(url, headers=HEADERS, verify=False, timeout=12)
@@ -61,7 +62,7 @@ def fetch(url):
 def extract_text_or_none(el):
     return el.get_text(strip=True) if el else ""
 
-# --- Парсинг новостей и документов ---
+# --- Парсинг ---
 def parse_news_list(html, base_url):
     soup = BeautifulSoup(html, "html.parser")
     candidates = []
@@ -148,7 +149,6 @@ def parse_news_list(html, base_url):
 def parse_docs(html, base_url):
     soup = BeautifulSoup(html, "html.parser")
     events = []
-
     links = soup.find_all('a', href=True)
     for a in links:
         title = extract_text_or_none(a)
@@ -173,7 +173,7 @@ def is_relevant(event):
             return True
     return False
 
-def enrich_and_filter(events):
+def enrich_and_filter(events, city=None, audience="студент"):
     out = []
     for e in events:
         ttype = None
@@ -183,6 +183,15 @@ def enrich_and_filter(events):
                 ttype = kw
                 break
         e["detected_type"] = ttype if ttype else ""
+        e["city"] = city if city else "онлайн"
+        e["audience"] = audience
+        e["date_start"] = ""
+        e["date_end"] = ""
+        e["reg_start"] = ""
+        e["reg_end"] = ""
+        e["team_required"] = 0
+        e["organizer"] = ""
+        e["created_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if is_relevant(e):
             out.append(e)
     return out
@@ -195,12 +204,51 @@ def init_db():
         CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
-            date TEXT,
-            link TEXT UNIQUE,
+            city TEXT,
+            audience TEXT,
+            type TEXT,
             description TEXT,
-            detected_type TEXT
+            date_start TEXT,
+            date_end TEXT,
+            reg_start TEXT,
+            reg_end TEXT,
+            team_required INTEGER,
+            organizer TEXT,
+            link TEXT UNIQUE,
+            created_at TEXT
         )
     """)
+    conn.commit()
+    conn.close()
+
+def upgrade_db_schema():
+    """Добавляет недостающие столбцы, если таблица уже существует"""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute(f"PRAGMA table_info({TABLE_NAME})")
+    existing_cols = [r[1] for r in cursor.fetchall()]
+
+    new_cols = {
+        "city": "TEXT",
+        "audience": "TEXT",
+        "type": "TEXT",
+        "date_start": "TEXT",
+        "date_end": "TEXT",
+        "reg_start": "TEXT",
+        "reg_end": "TEXT",
+        "team_required": "INTEGER",
+        "organizer": "TEXT",
+        "created_at": "TEXT"
+    }
+
+    for col, col_type in new_cols.items():
+        if col not in existing_cols:
+            try:
+                cursor.execute(f"ALTER TABLE {TABLE_NAME} ADD COLUMN {col} {col_type}")
+                print(f"[DB] Добавлен столбец {col}")
+            except sqlite3.Error as e:
+                print(f"[DB ERROR] Не удалось добавить столбец {col}: {e}")
+
     conn.commit()
     conn.close()
 
@@ -210,9 +258,16 @@ def save_events_to_db(events):
     for e in events:
         try:
             cursor.execute(f"""
-                INSERT OR IGNORE INTO {TABLE_NAME} (title, date, link, description, detected_type)
-                VALUES (?, ?, ?, ?, ?)
-            """, (e['title'], e['date'], e['link'], e['description'], e['detected_type']))
+                INSERT OR IGNORE INTO {TABLE_NAME}
+                (title, city, audience, type, description, date_start, date_end, reg_start, reg_end,
+                 team_required, organizer, link, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                e.get('title'), e.get('city'), e.get('audience'), e.get('detected_type'),
+                e.get('description'), e.get('date_start'), e.get('date_end'),
+                e.get('reg_start'), e.get('reg_end'), e.get('team_required'),
+                e.get('organizer'), e.get('link'), e.get('created_at')
+            ))
         except sqlite3.Error as ex:
             print(f"[ERROR] Не удалось сохранить событие {e['title']}: {ex}")
     conn.commit()
@@ -236,33 +291,34 @@ def main():
         print("[ERROR] Нет источников для парсинга")
         return
 
+    init_db()
+    upgrade_db_schema()
+
     for src in sources:
         print(f"[*] Парсим университет: {src['name']}")
+        city = src.get("city", "онлайн")
+        audience = src.get("audience", "студент")
 
         news_url = src.get("news_url")
         if news_url:
             html = fetch(news_url)
             if html:
                 events = parse_news_list(html, base_url=news_url)
-                all_events.extend(events)
+                all_events.extend(enrich_and_filter(events, city=city, audience=audience))
 
         for doc_url in src.get("doc_urls", []):
             html = fetch(doc_url)
             if html:
                 events = parse_docs(html, base_url=doc_url)
-                all_events.extend(events)
+                all_events.extend(enrich_and_filter(events, city=city, audience=audience))
 
     print(f"[*] Всего найдено событий: {len(all_events)}")
-    filtered = enrich_and_filter(all_events)
-    print(f"[*] Оставлено релевантных событий: {len(filtered)}")
-
-    if filtered:
-        df = pd.DataFrame(filtered)
+    if all_events:
+        df = pd.DataFrame(all_events)
         df.to_csv(OUTPUT_CSV, index=False, encoding="utf-8-sig")
-        init_db()
-        save_events_to_db(filtered)
+        save_events_to_db(all_events)
         print(f"[*] События сохранены в CSV и базу данных {DB_NAME}")
-        print(df[["title","date","link","detected_type"]].to_string(index=False))
+        print(df[["title","city","audience","detected_type","link"]].to_string(index=False))
     else:
         print("[*] Нет релевантных событий по ключевым словам")
 

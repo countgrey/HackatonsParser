@@ -1,25 +1,50 @@
 [
-    {
-        "name": "ОГУ (Оренбургский государственный университет)",
-        "news_url": "https://www.osu.ru/",
-        "doc_urls": [
-            "http://www.osu.ru/doc/79/type/8",
-            "http://www.osu.ru/doc/987/type/4"
-        ]
-    },
-    {
-        "name": "Оренбургский государственный педагогический университет (ОГПУ)",
-        "news_url": "http://www.ospu.ru/news/",
-        "doc_urls": []
-    },
-    {
-        "name": "Хакатоны и мероприятия в Оренбурге",
-        "news_url": "https://vk.com/orenburghackathon",
-        "doc_urls": []
-    },
-    {
-        "name": "Hackathon Russia (ориентировано на студенческие мероприятия в Оренбурге)",
-        "news_url": "https://habr.com/ru/search/?q=оренбург+хакатон",
-        "doc_urls": []
-    }
+  {
+    "name": "ОГУ (Оренбургский государственный университет)",
+    "news_url": "https://www.osu.ru/news/",
+    "doc_urls": [
+      "http://www.osu.ru/doc/79/type/8",
+      "http://www.osu.ru/doc/987/type/4"
+    ]
+  },
+  {
+    "name": "ОГПУ (Оренбургский государственный педагогический университет)",
+    "news_url": "https://ospu.ru/novosti/",
+    "doc_urls": []
+  },
+  {
+    "name": "ОрГМУ (Оренбургский государственный медицинский университет)",
+    "news_url": "https://www.orgma.ru/ru/novosti/",
+    "doc_urls": []
+  },
+  {
+    "name": "ОГАУ (Оренбургский государственный аграрный университет)",
+    "news_url": "https://orensau.ru/",
+    "doc_urls": []
+  },
+  {
+    "name": "TimePad (агрегатор мероприятий и хакатонов)",
+    "news_url": "https://timepad.ru/",
+    "doc_urls": []
+  },
+  {
+    "name": "Hackathons.pro (календарь хакатонов и IT-соревнований)",
+    "news_url": "https://hackathons.pro/",
+    "doc_urls": []
+  },
+  {
+    "name": "Hackathons.ru (агрегатор хакатонов)",
+    "news_url": "https://hackathons.ru/",
+    "doc_urls": []
+  },
+  {
+    "name": "Habr — поиск по хакатонам",
+    "news_url": "https://habr.com/ru/search/?q=хакатон",
+    "doc_urls": []
+  },
+  {
+    "name": "HackerEarth — раздел хакатонов",
+    "news_url": "https://www.hackerearth.com/challenges/hackathon/",
+    "doc_urls": []
+  }
 ]
