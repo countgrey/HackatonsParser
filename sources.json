@@ -1,50 +1,51 @@
 [
-  {
-    "name": "ОГУ (Оренбургский государственный университет)",
-    "news_url": "https://www.osu.ru/news/",
-    "doc_urls": [
-      "http://www.osu.ru/doc/79/type/8",
-      "http://www.osu.ru/doc/987/type/4"
-    ]
-  },
-  {
-    "name": "ОГПУ (Оренбургский государственный педагогический университет)",
-    "news_url": "https://ospu.ru/novosti/",
-    "doc_urls": []
-  },
-  {
-    "name": "ОрГМУ (Оренбургский государственный медицинский университет)",
-    "news_url": "https://www.orgma.ru/ru/novosti/",
-    "doc_urls": []
-  },
-  {
-    "name": "ОГАУ (Оренбургский государственный аграрный университет)",
-    "news_url": "https://orensau.ru/",
-    "doc_urls": []
-  },
-  {
-    "name": "TimePad (агрегатор мероприятий и хакатонов)",
-    "news_url": "https://timepad.ru/",
-    "doc_urls": []
-  },
-  {
-    "name": "Hackathons.pro (календарь хакатонов и IT-соревнований)",
-    "news_url": "https://hackathons.pro/",
-    "doc_urls": []
-  },
-  {
-    "name": "Hackathons.ru (агрегатор хакатонов)",
-    "news_url": "https://hackathons.ru/",
-    "doc_urls": []
-  },
-  {
-    "name": "Habr — поиск по хакатонам",
-    "news_url": "https://habr.com/ru/search/?q=хакатон",
-    "doc_urls": []
-  },
-  {
-    "name": "HackerEarth — раздел хакатонов",
-    "news_url": "https://www.hackerearth.com/challenges/hackathon/",
-    "doc_urls": []
-  }
+    {
+        "name": "Оренбургский государственный университет",
+        "city": "Оренбург",
+        "type": "Университет",
+        "start_url": "http://osu.ru/",
+        "base_url": "http://osu.ru/"
+    },
+    {
+        "name": "Оренбургский государственный аграрный университет",
+        "city": "Оренбург",
+        "type": "Университет",
+        "start_url": "http://orensau.ru/",
+        "base_url": "http://orensau.ru/"
+    },
+    {
+        "name": "Оренбургский государственный медицинский университет",
+        "city": "Оренбург",
+        "type": "Университет",
+        "start_url": "http://www.orgma.ru/",
+        "base_url": "http://www.orgma.ru/"
+    },
+    {
+        "name": "Оренбургский государственный педагогический университет",
+        "city": "Оренбург",
+        "type": "Университет",
+        "start_url": "https://ospu.ru/",
+        "base_url": "https://ospu.ru/"
+    },
+    {
+        "name": "Оренбургский государственный институт искусств им. Л. и М. Ростроповичей",
+        "city": "Оренбург",
+        "type": "Институт",
+        "start_url": "http://osiart.ru/",
+        "base_url": "http://osiart.ru/"
+    },
+    {
+        "name": "Оренбургский областной медицинский колледж",
+        "city": "Оренбург",
+        "type": "Колледж",
+        "start_url": "http://ormc.ru/",
+        "base_url": "http://ormc.ru/"
+    },
+    {
+        "name": "Оренбургский государственный колледж",
+        "city": "Оренбург",
+        "type": "Колледж",
+        "start_url": "https://ogk56.ru/",
+        "base_url": "https://ogk56.ru/"
+    }
 ]
