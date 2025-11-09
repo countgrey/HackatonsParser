@@ -134,7 +134,7 @@ def query_llm_for_cleaning_and_filtering(title: str, full_text: str, event_type:
     }
 
     try:
-        response = requests.post(LLM_URL, json=payload, timeout=45)
+        response = requests.post(LLM_URL, json=payload, timeout=100000)
         response.raise_for_status() 
         
         result_json_str = response.json().get('response', '')
