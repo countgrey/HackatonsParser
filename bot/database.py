@@ -11,11 +11,59 @@ class DatabaseManager:
         conn.row_factory = sqlite3.Row
         return conn
 
+    def create_users_table(self):
+        """Создает таблицу пользователей"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                user_id INTEGER PRIMARY KEY,
+                username TEXT,
+                first_name TEXT,
+                last_name TEXT,
+                role TEXT,
+                university TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+        conn.close()
+
+    def get_user(self, user_id):
+        """Получает пользователя по ID"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
+        user = cursor.fetchone()
+        conn.close()
+        return user
+
+    def save_user(self, user_data):
+        """Сохраняет или обновляет пользователя"""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT OR REPLACE INTO users 
+            (user_id, username, first_name, last_name, role, university, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        """, (
+            user_data['user_id'],
+            user_data.get('username'),
+            user_data.get('first_name'),
+            user_data.get('last_name'),
+            user_data.get('role'),
+            user_data.get('university')
+        ))
+        conn.commit()
+        conn.close()
+
     def get_stats(self):
         """Получить статистику базы данных"""
         conn = self.get_connection()
         cursor = conn.cursor()
         
+        # Статистика мероприятий
         cursor.execute("SELECT COUNT(*) as count FROM smart_events")
         total_events = cursor.fetchone()['count']
         
@@ -26,12 +74,16 @@ class DatabaseManager:
         cursor.execute("SELECT COUNT(*) as count FROM smart_events WHERE date_start >= ?", (today,))
         upcoming_events = cursor.fetchone()['count']
         
+        # Статистика пользователей
+        cursor.execute("SELECT COUNT(*) as count FROM users")
+        total_users = cursor.fetchone()['count']
+        
         conn.close()
         
         return {
             'total_events': total_events,
             'type_stats': type_stats,
-            'upcoming_events': upcoming_events
+            'upcoming_events': upcoming_events,
         }
 
     def get_events_page(self, page, items_per_page):

@@ -1,9 +1,18 @@
 import os
-from telegram import Update
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes, MessageHandler, filters
+from enum import Enum
+from telegram import Update, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telegram.ext import (
+    Application, CommandHandler, CallbackQueryHandler, ContextTypes, 
+    MessageHandler, filters, ConversationHandler
+)
 from .database import DatabaseManager
 from .keyboards import KeyboardManager
 from .utils import MessageFormatter
+
+# Состояния диалога
+class ProfileStates(Enum):
+    ROLE = 1
+    UNIVERSITY = 2
 
 class EventBot:
     def __init__(self):
@@ -18,11 +27,29 @@ class EventBot:
         self.keyboards = KeyboardManager()
         self.formatter = MessageFormatter()
         
+        # Создаем таблицу пользователей при инициализации
+        self.db.create_users_table()
+        
         self.application = Application.builder().token(self.bot_token).build()
         self.setup_handlers()
 
     def setup_handlers(self):
         """Настройка обработчиков команд"""
+        # ConversationHandler для сбора профиля
+        profile_conv_handler = ConversationHandler(
+            entry_points=[CommandHandler('profile', self.start_profile)],
+            states={
+                ProfileStates.ROLE: [
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.get_role)
+                ],
+                ProfileStates.UNIVERSITY: [
+                    MessageHandler(filters.TEXT & ~filters.COMMAND, self.get_university)
+                ],
+            },
+            fallbacks=[CommandHandler('cancel', self.cancel_profile)],
+        )
+
+        self.application.add_handler(profile_conv_handler)
         self.application.add_handler(CommandHandler("start", self.start_command))
         self.application.add_handler(CommandHandler("help", self.help_command))
         self.application.add_handler(CommandHandler("events", self.events_command))
@@ -30,33 +57,166 @@ class EventBot:
         self.application.add_handler(CommandHandler("upcoming", self.upcoming_events_command))
         self.application.add_handler(CommandHandler("search", self.search_command))
         self.application.add_handler(CommandHandler("stats", self.stats_command))
+        self.application.add_handler(CommandHandler("myprofile", self.show_profile))
         self.application.add_handler(CallbackQueryHandler(self.button_handler))
         self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
 
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """Обработчик команды /start"""
+        """Обработчик команды /start с проверкой профиля"""
         user = update.message.from_user
-        welcome_text = f"""
-👋 Привет, {user.first_name}!
+        
+        # Проверяем, есть ли профиль пользователя
+        existing_user = self.db.get_user(user.id)
+        
+        if existing_user:
+            welcome_text = f"""
+👋 С возвращением, {user.first_name}!
 
-Я бот для поиска мероприятий из образовательных учреждений Оренбурга.
+Ваш профиль уже настроен. Можете продолжить поиск мероприятий.
 
 📋 Доступные команды:
 /events - Все мероприятия
 /today - Мероприятия сегодня
 /upcoming - Ближайшие мероприятия  
 /search - Поиск мероприятий
+/myprofile - Показать мой профиль
+/profile - Изменить профиль
 /stats - Статистика базы
 /help - Помощь
+            """
+        else:
+            welcome_text = f"""
+👋 Привет, {user.first_name}!
 
-Выберите команду или просто напишите что ищете!
-        """
+Я бот для поиска мероприятий из образовательных учреждений Оренбурга.
+
+📝 Для персонализации рекомендаций давайте настроим ваш профиль.
+Введите /profile чтобы начать настройку.
+
+📋 Или сразу используйте команды:
+/events - Все мероприятия
+/today - Мероприятия сегодня
+/upcoming - Ближайшие мероприятия  
+/search - Поиск мероприятий
+/help - Помощь
+            """
+        
         await update.message.reply_text(welcome_text)
+
+    # PROFILE MANAGEMENT HANDLERS
+
+    async def start_profile(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Начинает процесс настройки профиля"""
+        user = update.message.from_user
+        
+        # Создаем клавиатуру с вариантами ролей
+        role_keyboard = [
+            [KeyboardButton("🎓 Студент"), KeyboardButton("👨‍🏫 Преподаватель")],
+            [KeyboardButton("🔬 Научный сотрудник"), KeyboardButton("🎯 Абитуриент")],
+            [KeyboardButton("👨‍💼 Сотрудник"), KeyboardButton("❔ Другое")]
+        ]
+        reply_markup = ReplyKeyboardMarkup(role_keyboard, one_time_keyboard=True, resize_keyboard=True)
+        
+        await update.message.reply_text(
+            "👤 **Давайте настроим ваш профиль**\n\n"
+            "❓ **Кто вы?** Выберите вариант ниже или напишите свой:",
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
+        )
+        
+        return ProfileStates.ROLE
+
+    async def get_role(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Получает роль пользователя и запрашивает вуз"""
+        role = update.message.text
+        context.user_data['role'] = role
+        
+        # Создаем клавиатуру с популярными вузами Оренбурга
+        university_keyboard = [
+            [KeyboardButton("🏛️ Оренбургский государственный университет")],
+            [KeyboardButton("🌾 Оренбургский государственный аграрный университет")],
+            [KeyboardButton("⚕️ Оренбургский государственный медицинский университет")],
+            [KeyboardButton("📚 Оренбургский государственный педагогический университет")],
+            [KeyboardButton("🎭 Оренбургский государственный институт искусств")],
+            [KeyboardButton("🏫 Другой вуз")]
+        ]
+        reply_markup = ReplyKeyboardMarkup(university_keyboard, one_time_keyboard=True, resize_keyboard=True)
+        
+        await update.message.reply_text(
+            f"✅ **Роль сохранена:** {role}\n\n"
+            "🏫 **Из какого вы вуза?** Выберите вариант ниже или напишите свой:",
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
+        )
+        
+        return ProfileStates.UNIVERSITY
+
+    async def get_university(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Получает вуз пользователя и сохраняет профиль"""
+        university = update.message.text
+        user = update.message.from_user
+        
+        # Сохраняем данные пользователя
+        user_data = {
+            'user_id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'role': context.user_data.get('role'),
+            'university': university
+        }
+        
+        self.db.save_user(user_data)
+        
+        # Убираем клавиатуру
+        await update.message.reply_text(
+            f"🎉 **Профиль успешно сохранен!**\n\n"
+            f"👤 **Роль:** {context.user_data.get('role')}\n"
+            f"🏫 **Вуз:** {university}\n\n"
+            f"Теперь вы можете использовать все функции бота! "
+            f"Введите /events чтобы посмотреть мероприятия или /help для списка команд.",
+            reply_markup=ReplyKeyboardRemove(),
+            parse_mode='Markdown'
+        )
+        
+        # Очищаем временные данные
+        context.user_data.clear()
+        
+        return ConversationHandler.END
+
+    async def cancel_profile(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Отменяет настройку профиля"""
+        await update.message.reply_text(
+            "❌ Настройка профиля отменена.\n"
+            "Вы можете настроить профиль позже с помощью команды /profile",
+            reply_markup=ReplyKeyboardRemove()
+        )
+        
+        context.user_data.clear()
+        return ConversationHandler.END
+
+    async def show_profile(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Показывает текущий профиль пользователя"""
+        user = update.message.from_user
+        user_profile = self.db.get_user(user.id)
+        
+        if not user_profile:
+            await update.message.reply_text(
+                "📝 Профиль не настроен. Введите /profile чтобы настроить профиль."
+            )
+            return
+        
+        profile_text = self.formatter.format_user_profile(user_profile)
+        await update.message.reply_text(profile_text, parse_mode='Markdown')
 
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик команды /help"""
         help_text = """
 📖 **Помощь по командам:**
+
+/start - Начать работу с ботом
+/profile - Настроить или изменить профиль
+/myprofile - Показать мой профиль
 
 /events - Показать все мероприятия с пагинацией
 /today - Мероприятия на сегодня
