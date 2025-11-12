@@ -1,43 +1,28 @@
-import logging
 import os
+import logging
 from dotenv import load_dotenv
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler
-from bot_handlers import (
-    start, help_command, show_events, show_types, 
-    update_data, show_stats, search_command, button_handler
-)
+from bot import EventBot
 
+# Загрузка переменных окружения
 load_dotenv()
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-DB_NAME = os.getenv('DB_NAME')
-TABLE_NAME = os.getenv('TABLE_NAME')
-
-if not BOT_TOKEN:
-    raise ValueError("BOT_TOKEN не найден в .env файле")
-
+# Настройка логирования
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    level=os.getenv('LOG_LEVEL', 'INFO')
 )
 logger = logging.getLogger(__name__)
 
-#---MAIN---
-def main():
-    app = Application.builder().token(BOT_TOKEN).build()
-    
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("events", show_events))
-    app.add_handler(CommandHandler("types", show_types))
-    app.add_handler(CommandHandler("update", update_data))
-    app.add_handler(CommandHandler("stats", show_stats))
-    app.add_handler(CommandHandler("search", search_command))
-    
-    app.add_handler(CallbackQueryHandler(button_handler))
-    
-    print("Бот запущен...")
-    app.run_polling()
-
 if __name__ == "__main__":
-    main()
+    try:
+        bot = EventBot()
+        print("🤖 Бот запущен...")
+        print(f"📊 Настройки:")
+        print(f"   • База данных: {bot.db_name}")
+        print(f"   • Элементов на странице: {bot.items_per_page}")
+        print(f"   • Уровень логирования: {os.getenv('LOG_LEVEL', 'INFO')}")
+        bot.run()
+    except ValueError as e:
+        print(e)
+    except Exception as e:
+        logger.error(f"Ошибка при запуске бота: {e}")
