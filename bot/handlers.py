@@ -33,6 +33,16 @@ class EventBot:
         self.application = Application.builder().token(self.bot_token).build()
         self.setup_handlers()
 
+    def get_main_menu_keyboard(self):
+        """Создает главное меню с reply-клавиатурой"""
+        keyboard = [
+            [KeyboardButton("📅 Мероприятия"), KeyboardButton("🎯 Сегодня")],
+            [KeyboardButton("🔜 Ближайшие"), KeyboardButton("🔍 Поиск")],
+            [KeyboardButton("📊 Статистика"), KeyboardButton("👤 Мой профиль")],
+            [KeyboardButton("ℹ️ Помощь")]
+        ]
+        return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
     def setup_handlers(self):
         """Настройка обработчиков команд"""
         # ConversationHandler для сбора профиля
@@ -58,8 +68,51 @@ class EventBot:
         self.application.add_handler(CommandHandler("search", self.search_command))
         self.application.add_handler(CommandHandler("stats", self.stats_command))
         self.application.add_handler(CommandHandler("myprofile", self.show_profile))
+        self.application.add_handler(CommandHandler("menu", self.show_main_menu))
         self.application.add_handler(CallbackQueryHandler(self.button_handler))
+        
+        # Обработчик для главного меню (должен быть перед общим обработчиком текста)
+        self.application.add_handler(MessageHandler(
+            filters.Text([
+                "📅 Мероприятия", "🎯 Сегодня", "🔜 Ближайшие", 
+                "🔍 Поиск", "📊 Статистика", "👤 Мой профиль", "ℹ️ Помощь"
+            ]), 
+            self.handle_main_menu
+        ))
+        
+        # Общий обработчик текста (для поиска)
         self.application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
+
+    async def handle_main_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Обработчик нажатий кнопок главного меню"""
+        text = update.message.text
+        
+        if text == "📅 Мероприятия":
+            await self.events_command(update, context)
+        elif text == "🎯 Сегодня":
+            await self.today_events_command(update, context)
+        elif text == "🔜 Ближайшие":
+            await self.upcoming_events_command(update, context)
+        elif text == "🔍 Поиск":
+            await update.message.reply_text(
+                "🔍 Введите ключевые слова для поиска:",
+                reply_markup=ReplyKeyboardRemove()  # Убираем клавиатуру для ввода текста
+            )
+        elif text == "📊 Статистика":
+            await self.stats_command(update, context)
+        elif text == "👤 Мой профиль":
+            await self.show_profile(update, context)
+        elif text == "ℹ️ Помощь":
+            await self.help_command(update, context)
+
+    async def show_main_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """Показывает главное меню"""
+        reply_markup = self.get_main_menu_keyboard()
+        await update.message.reply_text(
+            "🏠 **Главное меню**\n\nВыберите действие:",
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
+        )
 
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик команды /start с проверкой профиля"""
@@ -73,7 +126,22 @@ class EventBot:
 👋 С возвращением, {user.first_name}!
 
 Ваш профиль уже настроен. Можете продолжить поиск мероприятий.
+            """
+            # Показываем главное меню
+            reply_markup = self.get_main_menu_keyboard()
+        else:
+            welcome_text = f"""
+👋 Привет, {user.first_name}!
 
+Я бот для поиска мероприятий из образовательных учреждений Оренбурга.
+
+📝 Для персонализации рекомендаций давайте настроим ваш профиль.
+Введите /profile чтобы начать настройку.
+            """
+            # Без клавиатуры, предлагаем настроить профиль
+            reply_markup = None
+        
+        welcome_text += """
 📋 Доступные команды:
 /events - Все мероприятия
 /today - Мероприятия сегодня
@@ -83,25 +151,10 @@ class EventBot:
 /profile - Изменить профиль
 /stats - Статистика базы
 /help - Помощь
-            """
-        else:
-            welcome_text = f"""
-👋 Привет, {user.first_name}!
-
-Я бот для поиска мероприятий из образовательных учреждений Оренбурга.
-
-📝 Для персонализации рекомендаций давайте настроим ваш профиль.
-Введите /profile чтобы начать настройку.
-
-📋 Или сразу используйте команды:
-/events - Все мероприятия
-/today - Мероприятия сегодня
-/upcoming - Ближайшие мероприятия  
-/search - Поиск мероприятий
-/help - Помощь
-            """
+/menu - Показать главное меню
+        """
         
-        await update.message.reply_text(welcome_text)
+        await update.message.reply_text(welcome_text, reply_markup=reply_markup)
 
     # PROFILE MANAGEMENT HANDLERS
 
@@ -168,14 +221,15 @@ class EventBot:
         
         self.db.save_user(user_data)
         
-        # Убираем клавиатуру
+        # Показываем главное меню вместо удаления клавиатуры
+        reply_markup = self.get_main_menu_keyboard()
+        
         await update.message.reply_text(
             f"🎉 **Профиль успешно сохранен!**\n\n"
             f"👤 **Роль:** {context.user_data.get('role')}\n"
             f"🏫 **Вуз:** {university}\n\n"
-            f"Теперь вы можете использовать все функции бота! "
-            f"Введите /events чтобы посмотреть мероприятия или /help для списка команд.",
-            reply_markup=ReplyKeyboardRemove(),
+            f"Теперь вы можете использовать все функции бота!",
+            reply_markup=reply_markup,
             parse_mode='Markdown'
         )
         
@@ -217,6 +271,7 @@ class EventBot:
 /start - Начать работу с ботом
 /profile - Настроить или изменить профиль
 /myprofile - Показать мой профиль
+/menu - Показать главное меню
 
 /events - Показать все мероприятия с пагинацией
 /today - Мероприятия на сегодня
@@ -229,6 +284,9 @@ class EventBot:
 - Название мероприятия
 - Тип (конференция, семинар, хакатон)
 - Аудиторию (студенты, школьники)
+
+📱 **Главное меню:**
+Используйте кнопки меню для быстрого доступа к функциям!
         """
         await update.message.reply_text(help_text)
 
