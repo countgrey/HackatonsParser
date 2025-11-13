@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  event-bot:
+    build: .
+    container_name: event-bot
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+    environment:
+      - TZ=Europe/Moscow
+    working_dir: /app
+
+  # Опционально: Ollama для LLM фильтрации
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+
+volumes:
+  ollama_data:
