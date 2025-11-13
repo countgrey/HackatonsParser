@@ -43,6 +43,11 @@ class EventBot:
         ]
         return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
+    def get_back_to_menu_keyboard(self):
+        """Создает клавиатуру с одной кнопкой 'Главное меню'"""
+        keyboard = [[KeyboardButton("🏠 Главное меню")]]
+        return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
     def setup_handlers(self):
         """Настройка обработчиков команд"""
         # ConversationHandler для сбора профиля
@@ -75,7 +80,8 @@ class EventBot:
         self.application.add_handler(MessageHandler(
             filters.Text([
                 "📅 Мероприятия", "🎯 Сегодня", "🔜 Ближайшие", 
-                "🔍 Поиск", "📊 Статистика", "👤 Мой профиль", "ℹ️ Помощь"
+                "🔍 Поиск", "📊 Статистика", "👤 Мой профиль", "ℹ️ Помощь",
+                "🏠 Главное меню"  # Добавляем обработку новой кнопки
             ]), 
             self.handle_main_menu
         ))
@@ -104,6 +110,8 @@ class EventBot:
             await self.show_profile(update, context)
         elif text == "ℹ️ Помощь":
             await self.help_command(update, context)
+        elif text == "🏠 Главное меню":
+            await self.show_main_menu(update, context)
 
     async def show_main_menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Показывает главное меню"""
@@ -364,7 +372,12 @@ class EventBot:
     async def search_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Поиск мероприятий"""
         if not context.args:
-            await update.message.reply_text("🔍 **Использование поиска:**\n/search <ключевые слова>\n\nПример: /search конференция студенты")
+            # Показываем инструкцию по использованию поиска с клавиатурой "Главное меню"
+            reply_markup = self.get_back_to_menu_keyboard()
+            await update.message.reply_text(
+                "🔍 **Использование поиска:**\n/search <ключевые слова>\n\nПример: /search конференция студенты",
+                reply_markup=reply_markup
+            )
             return
         
         search_query = ' '.join(context.args)
@@ -379,17 +392,33 @@ class EventBot:
         """Выполнить поиск мероприятий"""
         events = self.db.search_events(search_query)
         
+        # Создаем клавиатуру для возврата в меню
+        menu_keyboard = self.get_back_to_menu_keyboard()
+        
         if not events:
-            await update.message.reply_text(f"🔍 По запросу '{search_query}' ничего не найдено.")
+            await update.message.reply_text(
+                f"🔍 По запросу '{search_query}' ничего не найдено.",
+                reply_markup=menu_keyboard
+            )
             return
         
         if len(events) == 1:
             message = self.formatter.format_event_message(events[0])
-            await update.message.reply_text(message, parse_mode='Markdown')
+            await update.message.reply_text(
+                message, 
+                parse_mode='Markdown',
+                reply_markup=menu_keyboard
+            )
         else:
             message = f"🔍 **Найдено мероприятий: {len(events)}**\n\n"
             reply_markup = self.keyboards.create_search_results_keyboard(events)
             await update.message.reply_text(message, reply_markup=reply_markup)
+            
+            # Также показываем кнопку "Главное меню" для удобства
+            await update.message.reply_text(
+                "Вы можете вернуться в главное меню:",
+                reply_markup=menu_keyboard
+            )
 
     async def button_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Обработчик нажатий на inline-кнопки"""
