@@ -331,7 +331,7 @@ class EventBot:
             await update.message.reply_text("📭 В базе данных нет мероприятий.")
             return
         
-        message = f"📋 **Мероприятия** (страница {page + 1} из {events_data['total_pages']})\n\n"
+        message = f"📋 Мероприятия (страница {page + 1} из {events_data['total_pages']})\n\n"
         reply_markup = self.keyboards.create_events_keyboard(
             events_data['events'], 
             page, 

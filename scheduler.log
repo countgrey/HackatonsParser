@@ -1,0 +1,37 @@
+2025-11-13 12:07:35,148 - __main__ - INFO - 🤖 Запуск бота...
+2025-11-13 12:07:35,150 - __main__ - INFO - ✅ Бот успешно запущен
+2025-11-13 12:07:35,151 - __main__ - INFO - 📅 Парсер запланирован на ежедневный запуск в 03:00
+2025-11-13 12:07:35,151 - __main__ - INFO - 🚀 Планировщик запущен. Бот работает, парсер запускается по расписанию.
+2025-11-13 12:07:35,151 - __main__ - INFO - 💡 Для остановки нажмите Ctrl+C
+2025-11-13 12:07:36,751 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:07:36,751 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getMe "HTTP/1.1 200 OK"
+2025-11-13 12:07:36,826 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:07:36,825 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/deleteWebhook "HTTP/1.1 200 OK"
+2025-11-13 12:07:36,829 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:07:36,829 - telegram.ext.Application - INFO - Application started
+2025-11-13 12:07:47,214 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:07:47,213 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:07:57,351 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:07:57,351 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:07,431 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:07,431 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:15,783 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:15,783 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:16,066 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:16,066 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:19,566 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:19,561 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:19,670 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:19,669 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:22,807 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:22,807 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:22,921 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:22,920 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:24,075 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:24,075 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:24,179 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:24,179 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:25,268 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:25,268 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:25,432 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:25,431 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:27,321 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:27,320 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:27,513 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:27,512 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:28,378 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:28,377 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:28,567 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:28,567 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:29,418 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:29,418 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:29,538 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:29,538 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:31,725 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:31,725 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/getUpdates "HTTP/1.1 200 OK"
+2025-11-13 12:08:31,927 - __main__ - ERROR - 🤖 [BOT ERROR] 2025-11-13 12:08:31,926 - httpx - INFO - HTTP Request: POST https://api.telegram.org/bot8261434009:AAHwHM_bO9aBiMYoGIvWkF1r6Koc92HznU8/sendMessage "HTTP/1.1 200 OK"
+2025-11-13 12:08:36,769 - __main__ - INFO - 🛑 Получен сигнал остановки...
+2025-11-13 12:08:36,769 - __main__ - INFO - 🛑 Остановка процессов...
+2025-11-13 12:08:36,772 - __main__ - INFO - 🤖 [BOT] 🤖 Бот запущен...
+2025-11-13 12:08:36,772 - __main__ - INFO - 🤖 [BOT] 📊 Настройки:
+2025-11-13 12:08:36,772 - __main__ - INFO - 🤖 [BOT] • База данных: smart_filtered.db
+2025-11-13 12:08:36,772 - __main__ - INFO - 🤖 [BOT] • Элементов на странице: 5
+2025-11-13 12:08:36,772 - __main__ - INFO - 🤖 [BOT] • Уровень логирования: INFO
+2025-11-13 12:08:37,035 - __main__ - INFO - ✅ Все процессы остановлены
