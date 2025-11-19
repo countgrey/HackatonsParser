@@ -1,0 +1,29 @@
+# Dockerfile для парсера
+FROM python:3.11-slim
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Устанавливаем системные зависимости
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копируем файлы с зависимостями
+COPY requirements.txt .
+
+# Устанавливаем Python зависимости
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем все файлы парсера
+COPY *.py .
+COPY sources.json .
+COPY .env .
+
+# Создаем необходимые директории
+RUN mkdir -p logs data
+
+# Запуск парсера
+CMD ["python", "run_parser.py", "--once"]

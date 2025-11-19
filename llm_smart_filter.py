@@ -5,8 +5,14 @@ import time
 from typing import Optional, Dict, Any, List
 
 # --- КОНФИГУРАЦИЯ LLM ---
-LLM_URL = "http://localhost:11434/api/generate" # URL для Ollama
-MODEL_NAME = "mistral" # Или любая другая модель
+import os
+from dotenv import load_dotenv
+
+# Загрузка переменных окружения
+load_dotenv()
+
+LLM_URL = os.getenv('OLLAMA_URL', 'http://localhost:11434') + "/api/generate"
+MODEL_NAME = os.getenv('MODEL_NAME', 'mistral')
 SOURCE_DB_NAME = "events.db"
 TARGET_DB_NAME = "smart_filtered.db" # <-- НОВАЯ ЦЕЛЕВАЯ БАЗА
 # ---

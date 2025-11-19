@@ -10,7 +10,13 @@ from datetime import datetime
 from collections import deque
 
 # --- КОНФИГУРАЦИЯ ---
-DATABASE_NAME = "events.db"
+import os
+from dotenv import load_dotenv
+
+# Загрузка переменных окружения
+load_dotenv()
+
+DATABASE_NAME = os.getenv('RAW_DB_NAME', 'events.db')
 SOURCES_FILE = "sources.json" 
 
 # --- ПАРАМЕТРЫ ЗАПУСКА ---

@@ -1,0 +1,31 @@
+# Dockerfile для Telegram бота
+FROM python:3.11-slim
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Устанавливаем системные зависимости
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копируем файлы с зависимостями только для бота
+COPY requirements.txt .
+
+# Устанавливаем Python зависимости
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем файлы бота
+COPY bot.py .
+COPY bot/ ./bot/
+COPY run_bot.py .
+COPY .env .
+
+# Создаем необходимые директории
+RUN mkdir -p logs data
+
+# Открываем порт (если нужно для веб-хуков)
+EXPOSE 8443
+
+# Запуск бота
+CMD ["python", "run_bot.py"]
